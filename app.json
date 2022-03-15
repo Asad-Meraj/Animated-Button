@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "payment-progress",
+    "slug": "payment-progress",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "payment-progress"
+}

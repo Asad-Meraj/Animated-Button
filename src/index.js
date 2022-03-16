@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ProgressBtn } from './components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as PaymentApi from './api/payment.api';
-import axios from 'axios';
+import { API_DELAY_TIME } from './constants/common';
 
 const STATUS_TEXT = {
   0: {
@@ -34,30 +34,43 @@ export default function App() {
       PaymentApi.getProgress(paymentId)
         .then((res) => {
           setProgress(res.data.progress);
-          setDisableBtn(true)
+          
           if (res.data.progress === 100) {
-            setStatus(1)
-            setDisableBtn(false)
+            changeStatusToSuccess()
             clearInterval(interval)
           }
         })
-    }, 1000);
+    }, API_DELAY_TIME);
 
     return () => clearInterval(interval);
   }, [paymentId])
 
+  const changeStatusToSuccess = () => {
+    setTimeout(() => {
+      setStatus(1)
+      setDisableBtn(false)
+    }, API_DELAY_TIME + 100)
+  }
+
   const initiatePayment = () => {
+    setStatus(0)
+    setDisableBtn(true)
+    setProgress(0)
     PaymentApi.create()
       .then((res) => setPaymentId(res.data.id))
-      .catch(err => console.log("error while creating payment", err))
+      .catch(err => {
+        console.log("error while creating payment", err)
+        setDisableBtn(false)
+      })
   }
 
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <ProgressBtn step={progress} totalSteps={100} status={status} onClick={initiatePayment} disable={disableBtn}>
+      <ProgressBtn step={progress} totalSteps={100} status={status} 
+      onClick= {initiatePayment} disable={disableBtn}>
         <View style={styles.textView}>
-          <Text style={styles.text}>{STATUS_TEXT[status].text}</Text>
+        <Text style={styles.text}>{STATUS_TEXT[status].text}</Text>
           <Icon name={STATUS_TEXT[status].icon} size={24} color="white"/>
         </View>
       </ProgressBtn>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
+import { API_DELAY_TIME } from '../../constants/common';
 
 const STATUS_COLOR = {
   0: '#4B4F93',
@@ -19,7 +20,7 @@ export default (props) => {
   React.useEffect(() => {
     Animated.timing(animatedValue, {
       toValue:          reactive,
-      duration:         1000,
+      duration:         API_DELAY_TIME,
       useNativeDriver:  true
     }).start();
   }, []);
@@ -28,19 +29,22 @@ export default (props) => {
     reactive.setValue((step* width)/totalSteps - width);
   }, [step, width]);
 
+  const progressViewStyle = {
+    height: HEIGHT,
+    width: '100%',
+    backgroundColor: STATUS_COLOR[status],
+    transform: [{
+      translateX: animatedValue
+    }],
+  }
+
   return (
     <TouchableOpacity style={styles.container} onLayout={e => {
       const newWidth = e.nativeEvent.layout.width;
       setWidth(newWidth);
     }} onPress={onClick} disabled={disable} >
-      <Animated.View style={{
-        height: HEIGHT,
-        width: '100%',
-        backgroundColor: STATUS_COLOR[status],
-        transform: [{
-          translateX: animatedValue
-        }],
-      }}/>
+      <Animated.View style={progressViewStyle} />
+
       <View style={styles.children}>
         {props.children}
       </View>
